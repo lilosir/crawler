@@ -9,7 +9,7 @@ import (
 func Fetch(url string) ([]byte, error) {
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
-	req.Header.Add("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1")
+	req.Header.Add("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1 (KHTML, like Gecko) CriOS/79.0.3945.88 Mobile/13B143 Safari/601.1.46")
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
