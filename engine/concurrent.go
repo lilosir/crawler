@@ -15,27 +15,30 @@ type Scheduler interface {
 }
 
 //Run the engine as long as there is at least one request
-func (c *ConcurrentEngine) Run(seeds ...Request) {
+func (e *ConcurrentEngine) Run(seeds ...Request) {
 	in := make(chan Request)
 	out := make(chan ParseResult)
-	c.Scheduler.ConfigureMasterWorkerChannel(in)
+	e.Scheduler.ConfigureMasterWorkerChannel(in)
 
-	for i := 0; i < c.WorkerCounter; i++ {
+	for i := 0; i < e.WorkerCounter; i++ {
 		createWorker(in, out)
 	}
 
 	for _, r := range seeds {
-		c.Scheduler.Submit(r)
+		e.Scheduler.Submit(r)
 	}
+
+	itemCount := 0
 
 	for {
 		result := <-out
 		for _, item := range result.Items {
-			log.Printf("Got item: %v\n", item)
+			log.Printf("Got item %d: %v\n", itemCount, item)
+			itemCount++
 		}
 
 		for _, request := range result.Requests {
-			c.Scheduler.Submit(request)
+			e.Scheduler.Submit(request)
 		}
 	}
 }
