@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-var rateLimit = time.Tick(50 * time.Millisecond)
+var rateLimit = time.Tick(100 * time.Millisecond)
 
 //Fetch all the data from website into byte slice
 func Fetch(url string) ([]byte, error) {

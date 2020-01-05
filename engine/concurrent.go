@@ -2,12 +2,11 @@ package engine
 
 import "log"
 
-import "firstCrawler/model"
-
 //ConcurrentEngine struct
 type ConcurrentEngine struct {
 	Scheduler     Scheduler
 	WorkerCounter int
+	ItemChan      chan interface{}
 }
 
 //Scheduler is the interface shedule all the requests
@@ -40,15 +39,16 @@ func (e *ConcurrentEngine) Run(seeds ...Request) {
 		e.Scheduler.Submit(r)
 	}
 
-	profileCount := 0
-
 	for {
 		result := <-out
 		for _, item := range result.Items {
-			if profile, ok := item.(model.Profile); ok {
-				log.Printf("Got item %d: %v\n", profileCount, profile)
-				profileCount++
-			}
+			go func(i interface{}) {
+				e.ItemChan <- i
+			}(item)
+			// warnings below
+			// go func() {
+			// 	e.ItemChan <- item
+			// }()
 		}
 
 		//URL dedup
