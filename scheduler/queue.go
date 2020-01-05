@@ -10,10 +10,6 @@ type QueueScheduler struct {
 	WorkerChan  chan chan engine.Request
 }
 
-//ConfigureMasterWorkerChannel ...
-func (s *QueueScheduler) ConfigureMasterWorkerChannel(c chan engine.Request) {
-}
-
 //WorkerReady ... send request channel to worker channel
 func (s *QueueScheduler) WorkerReady(w chan engine.Request) {
 	s.WorkerChan <- w
@@ -22,6 +18,11 @@ func (s *QueueScheduler) WorkerReady(w chan engine.Request) {
 //Submit reques to request channel
 func (s *QueueScheduler) Submit(r engine.Request) {
 	s.RequestChan <- r
+}
+
+// CreateWorkerChan will create worker channel, every worker has own channel
+func (s *QueueScheduler) CreateWorkerChan() chan engine.Request {
+	return make(chan engine.Request)
 }
 
 //Run ..
@@ -47,6 +48,7 @@ func (s *QueueScheduler) Run() {
 				// send next request to w, don't know what is next request, so put into a queue
 				workerQ = append(workerQ, w)
 			case activeWorker <- activeRequest:
+				// if both active worker and active request are not empty, send the request to the worker
 				workerQ = workerQ[1:]
 				requestQ = requestQ[1:]
 			}

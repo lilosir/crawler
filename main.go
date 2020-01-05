@@ -10,17 +10,22 @@ import (
 func main() {
 	fmt.Println("start...")
 
-	//which engine should run
+	//simple engine
 	// currentEngine := engine.SimpleEngine{}
 
+	// concurrent engines, simple or queue
 	currentEngine := engine.ConcurrentEngine{
 		// Scheduler:     &scheduler.SimpleScheduler{},
 		Scheduler:     &scheduler.QueueScheduler{},
-		WorkerCounter: 10,
+		WorkerCounter: 50,
 	}
 
 	currentEngine.Run(engine.Request{
 		URL:       "http://www.zhenai.com/zhenghun",
 		ParseFunc: parser.ParseCityList,
 	})
+	// currentEngine.Run(engine.Request{
+	// 	URL:       "http://www.zhenai.com/zhenghun/shanghai",
+	// 	ParseFunc: parser.ParseCity,
+	// })
 }
