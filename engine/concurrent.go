@@ -1,12 +1,14 @@
 package engine
 
-import "log"
+import (
+	"log"
+)
 
 //ConcurrentEngine struct
 type ConcurrentEngine struct {
 	Scheduler     Scheduler
 	WorkerCounter int
-	ItemChan      chan interface{}
+	ItemChan      chan Item
 }
 
 //Scheduler is the interface shedule all the requests
@@ -42,7 +44,7 @@ func (e *ConcurrentEngine) Run(seeds ...Request) {
 	for {
 		result := <-out
 		for _, item := range result.Items {
-			go func(i interface{}) {
+			go func(i Item) {
 				e.ItemChan <- i
 			}(item)
 			// warnings below

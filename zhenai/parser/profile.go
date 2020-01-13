@@ -17,9 +17,10 @@ var heightRe = regexp.MustCompile(`([0-9]+)cm`)
 var areaRe = regexp.MustCompile(`工作地:(.+)`)
 var incomeRe = regexp.MustCompile(`月收入:(.+)`)
 var genderRe = regexp.MustCompile(`<a href="http://www.zhenai.com/zhenghun/[^>]+">[\D]+([\D]{1})士征婚</a>`)
+var urlIDRe = regexp.MustCompile(`http://album.zhenai.com/u/([0-9]+)`)
 
 //ParseProfile reture all the useful info need to be known
-func ParseProfile(contents []byte, name string) engine.ParseResult {
+func ParseProfile(contents []byte, name string, url string) engine.ParseResult {
 
 	profile := model.Profile{}
 
@@ -66,8 +67,17 @@ func ParseProfile(contents []byte, name string) engine.ParseResult {
 		}
 	})
 
+	item := engine.Item{
+		URL:     url,
+		TYPE:    "zhenai",
+		Payload: profile,
+	}
+	if id, ok := extractString(url, urlIDRe); ok {
+		item.ID = id
+	}
+
 	return engine.ParseResult{
-		Items: []interface{}{profile},
+		Items: []engine.Item{item},
 	}
 }
 
@@ -88,4 +98,11 @@ func extractInt(value string, re *regexp.Regexp) (int, bool) {
 		}
 	}
 	return 0, false
+}
+
+// ProfileParse ...
+func ProfileParse(name string) engine.ParseFunc {
+	return func(c []byte, url string) engine.ParseResult {
+		return ParseProfile(c, name, url)
+	}
 }

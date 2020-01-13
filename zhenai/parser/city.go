@@ -12,7 +12,7 @@ var (
 )
 
 //ParseCity returns all the users in a byte slice
-func ParseCity(contents []byte) engine.ParseResult {
+func ParseCity(contents []byte, _ string) engine.ParseResult {
 	profileMatches := profileRe.FindAllSubmatch(contents, -1)
 	citiesMatches := cityURLRe.FindAllSubmatch(contents, -1)
 
@@ -21,10 +21,8 @@ func ParseCity(contents []byte) engine.ParseResult {
 		name := string(profile[2])
 		// result.Items = append(result.Items, "User "+name)
 		result.Requests = append(result.Requests, engine.Request{
-			URL: string(profile[1]),
-			ParseFunc: func(c []byte) engine.ParseResult {
-				return ParseProfile(c, name)
-			},
+			URL:       string(profile[1]),
+			ParseFunc: ProfileParse(name),
 		})
 	}
 
